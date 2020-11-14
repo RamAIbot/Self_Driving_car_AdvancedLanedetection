@@ -53,11 +53,11 @@ combined[((gradx == 1) & (grady == 1)) | ((mag_binary == 1) & (dir_binary == 1))
 Goto project directory
 Run prespectvetransform.py
 ```
-<h4> Image wehre object is facing different angle and not camera </h4>
-<img src="" alt="image at corner"/>
+<h4> Image where object is facing different angle and not camera </h4>
+<img src="ptun.JPG" alt="image at corner"/>
 
 <h4> Perspective transform output </h4>
-<img src="" alt="perspective transformed"/>
+<img src="ptfinal.JPG" alt="perspective transformed"/>
 
 <h3> Final Pipeline </h3>
 
@@ -74,7 +74,7 @@ The output is stored in ./output_images
 
 <p> We combine all the techniques and detect lanes in the videos . We read the image and set the kernel size as 3 for all the gradient thresholding. The image is undistorted using the camera matrix and distortion coefficients in ./camera_cal/matrix.p pickle file. The sobel along x & y is performed. Then magnitude and gradient is computed. Finally the image is converted to HLS and Saturation values are adjusted. All these are combined to get the final image. </p>
 
-<h5> Perspective transform and Polynomial Fitiing </h5>
+<h5> Perspective transform and Polynomial Fitting </h5>
 
 <p> The trapezoidal region of the warped image is chosen as the source. The sources covers the left and right lanes with slight margin to fit for different images. Destination points are chosen to transform the source points to a rectangular region in the transformed image</p>
 
@@ -82,10 +82,38 @@ The output is stored in ./output_images
 
 <h6> Histogram image </h6>
 
-<img src="" alt="histogram"/>
+<img src="hist.JPG" alt="histogram"/>
 
 <p> We use sliding window to find out the lanes along y direction since x direction lanes don't change much we fit a polynomial for y direction. We move the sliding window in y direction and find out the maximum in the left half and right half of the histogram for each window. A selected margin is used to make a box around the lane. If the box has more lane pixels than minimum pixel we then recenter the box along x for the next window. After that select the corrseponding left lane and right lanes x,y coordinates. Now we use the polyfit function to detect both lanes in the image.(y=a*x^2+b*x+c) </p>
 
+<h6> Source points in the image for perspective transform </h6>
+
+<img src="trapezoidal.JPG" alt="trapezoidal"/>
+
+<h6> Perspective transform of road </h6>
+
+<img src="perspective.JPG" alt="perspective"/>
+
+<h6> polynomial fitting </h6>
+
+<img src="finall.JPG" alt="finall"/>
 
 
+<h5> Measuring the radius of curvature </h5>
+
+<img src=" " alt="rad"/>
+
+The radius of curvature measure here is based on pixel value. To convert to real word numbers we need to do some conversion. The lane is about 30 meters long and 3.7 meters wide. Or, if you prefer to derive a conversion from pixel space to world space in your own images, compare your images with U.S. regulations that require a minimum lane width of 12 feet or 3.7 meters, and the dashed lane lines are 10 feet or 3 meters long each.
+
+Let's say that our camera image has 720 relevant pixels in the y-dimension, and we'll say roughly 700 relevant pixels in the x-dimension between 2 lanes from histogram. Therefore, to convert from pixels to real-world meter measurements, we can use:
+
+# Define conversions in x and y from pixels space to meters
+ym_per_pix = 30/720 # meters per pixel in y dimension
+xm_per_pix = 3.7/700 # meters per pixel in x dimension
+
+
+
+<h5> Adjustment for video </h5> 
+
+<p> Finally for a video we need to perform all the calculation for each frame. Since finding the lanes takes much time, we can make a margin around the previoulsy detected lanes and serach for lanes pixelx from there alone. We can also introduce a count variable and perform the lane detection from complete image after certain steps of the video. This helps to solve an miscalculation and wrong lane detection which might occur while searching in the margin of previous lane alone, if the previous lane is wrongly detected, the error may accumulate. So we recalculate the lanes after certain time frames again. </p>
 

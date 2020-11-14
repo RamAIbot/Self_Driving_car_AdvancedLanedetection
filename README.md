@@ -17,13 +17,13 @@ Run project.py
 The output matrices are stored in ./camera_cal/matrix.p
 
 ```
-<h2> Distorted image </h2>
+<h4> Distorted image </h4>
 
-<img src="./" alt="distorted image"/>
+<img src="or3.JPG" alt="distorted image"/>
 
-<h2> Undistorted image after calibration </h2>
+<h4> Undistorted image after calibration </h4>
 
-<img src="./" alt="undistorted image"/>
+<img src="un3.JPG" alt="undistorted image"/>
 
 <p> We can see that there is a bulging effect at the bottom of the undistorted image which is being corrected by calibration of camera lenses </p>
 
@@ -42,8 +42,49 @@ combined[((gradx == 1) & (grady == 1)) | ((mag_binary == 1) & (dir_binary == 1))
 
 ```
 
-<img src="./" alt="thresholding_image"/>
-<img src="./" alt="tuner_image"/>
+<img src="./thresh1.JPG" alt="thresholding_image"/>
+<img src="./thresh.JPG" alt="tuner_image"/>
+
+<h3> Perspective Transform </h3>
+
+<p> To detect the curvature of the a line we cannot directly determine with the image from the camera. These images may appear curved even when they are lot for points in long distance from camera. So we use a perspective transform to solve this. We get a bird's eye view of the image after the transform. We test the transformtion using the same chess board image. But this time the object is away from the center of the image. The perspective warps this and brings the image to the center. We also use Bilinear interpolation to to fill up the areas while transforming </p>
+
+```
+Goto project directory
+Run prespectvetransform.py
+```
+<h4> Image wehre object is facing different angle and not camera </h4>
+<img src="" alt="image at corner"/>
+
+<h4> Perspective transform output </h4>
+<img src="" alt="perspective transformed"/>
+
+<h3> Final Pipeline </h3>
+
+```
+Go to project directory
+For detecting lanes in images
+Run Pipeline_for_images.py
+For detecting lanes in videos
+Run Pipeline_for_videos.py
+
+The output is stored in ./output_images
+
+```
+
+<p> We combine all the techniques and detect lanes in the videos . We read the image and set the kernel size as 3 for all the gradient thresholding. The image is undistorted using the camera matrix and distortion coefficients in ./camera_cal/matrix.p pickle file. The sobel along x & y is performed. Then magnitude and gradient is computed. Finally the image is converted to HLS and Saturation values are adjusted. All these are combined to get the final image. </p>
+
+<h5> Perspective transform and Polynomial Fitiing </h5>
+
+<p> The trapezoidal region of the warped image is chosen as the source. The sources covers the left and right lanes with slight margin to fit for different images. Destination points are chosen to transform the source points to a rectangular region in the transformed image</p>
+
+<p>Now we fit a second polynomial for the lanes. The histogram of the image is taken at the bottom half of the image. The magnitude of the histogram at the lanes is very high and so we choose that as the point of start </p>
+
+<h6> Histogram image </h6>
+
+<img src="" alt="histogram"/>
+
+<p> We use sliding window to find out the lanes along y direction since x direction lanes don't change much we fit a polynomial for y direction. We move the sliding window in y direction and find out the maximum in the left half and right half of the histogram for each window. A selected margin is used to make a box around the lane. If the box has more lane pixels than minimum pixel we then recenter the box along x for the next window. After that select the corrseponding left lane and right lanes x,y coordinates. Now we use the polyfit function to detect both lanes in the image.(y=a*x^2+b*x+c) </p>
 
 
 

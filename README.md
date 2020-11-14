@@ -101,11 +101,15 @@ The output is stored in ./output_images
 
 <h5> Measuring the radius of curvature </h5>
 
-<img src=" " alt="rad"/>
+<img src="rad.JPG" alt="rad"/>
+<p>
+The radius of curvature measure here is based on pixel value. To convert to real word numbers we need to do some conversion. The lane is about 30 meters long and 3.7 meters wide. Or, if you prefer to derive a conversion from pixel space to world space in your own images, compare your images with U.S. regulations that require a minimum lane width of 12 feet or 3.7 meters, and the dashed lane lines are 10 feet or 3 meters long each.</p>
 
-The radius of curvature measure here is based on pixel value. To convert to real word numbers we need to do some conversion. The lane is about 30 meters long and 3.7 meters wide. Or, if you prefer to derive a conversion from pixel space to world space in your own images, compare your images with U.S. regulations that require a minimum lane width of 12 feet or 3.7 meters, and the dashed lane lines are 10 feet or 3 meters long each.
+<p>
+  Low numbers imply strong curves, high numbers imply straight road. In theory, in case of a perfectly straight road the radius of curvature is infinite. In the practice, a number higher than 2-3000 means a pretty straight road, and the variance in the numbers is relatively high in case of straight lines. So having ~3500 and ~7100 for the two lane lines can be completely OK, it means that the road is more or less straight.
+</p>
 
-Let's say that our camera image has 720 relevant pixels in the y-dimension, and we'll say roughly 700 relevant pixels in the x-dimension between 2 lanes from histogram. Therefore, to convert from pixels to real-world meter measurements, we can use:
+<p> Let's say that our camera image has 720 relevant pixels in the y-dimension, and we'll say roughly 700 relevant pixels in the x-dimension between 2 lanes from histogram. Therefore, to convert from pixels to real-world meter measurements, we can use: </p>
 
 ```
 Define conversions in x and y from pixels space to meters
@@ -128,6 +132,6 @@ https://drive.google.com/file/d/1nOKu9H5Llw6uma8CUZJQLOld0qTByNxQ/view?usp=shari
 
 ```
 
-<img src=" " alt="final image"/>
+<img src="finallout.JPG" alt="final image"/>
 
 

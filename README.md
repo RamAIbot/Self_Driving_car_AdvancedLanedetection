@@ -107,13 +107,27 @@ The radius of curvature measure here is based on pixel value. To convert to real
 
 Let's say that our camera image has 720 relevant pixels in the y-dimension, and we'll say roughly 700 relevant pixels in the x-dimension between 2 lanes from histogram. Therefore, to convert from pixels to real-world meter measurements, we can use:
 
-# Define conversions in x and y from pixels space to meters
+```
+Define conversions in x and y from pixels space to meters
 ym_per_pix = 30/720 # meters per pixel in y dimension
 xm_per_pix = 3.7/700 # meters per pixel in x dimension
 
+```
 
 
 <h5> Adjustment for video </h5> 
 
 <p> Finally for a video we need to perform all the calculation for each frame. Since finding the lanes takes much time, we can make a margin around the previoulsy detected lanes and serach for lanes pixelx from there alone. We can also introduce a count variable and perform the lane detection from complete image after certain steps of the video. This helps to solve an miscalculation and wrong lane detection which might occur while searching in the margin of previous lane alone, if the previous lane is wrongly detected, the error may accumulate. So we recalculate the lanes after certain time frames again. </p>
+
+<h6> Final Output Image </h6>
+
+```
+The video output is uploaded in drive with the link below
+
+https://drive.google.com/file/d/1nOKu9H5Llw6uma8CUZJQLOld0qTByNxQ/view?usp=sharing
+
+```
+
+<img src=" " alt="final image"/>
+
 

@@ -134,4 +134,7 @@ https://drive.google.com/file/d/1nOKu9H5Llw6uma8CUZJQLOld0qTByNxQ/view?usp=shari
 
 <img src="finallout.JPG" alt="final image"/>
 
+<h5> Problems and further improvements: </h5>
+
+<p> The pipeline works very well for roads where there is no additional lighting. It detects clearly in areas when there is not much sunlight falling on the road. But during afternoon the detection fails becuase of the direct sunlight on the road, the lanes are lighted up more causing the yellow and white lanes less visible by the dominating sunlight. This causes incorrect detection. A more sophiscated algorithm may be used for detecting in areas of more intense sunlight. </p>
 

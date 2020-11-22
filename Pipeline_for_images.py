@@ -155,8 +155,8 @@ def hist(img):
 #image = cv2.imread('./test_images/test2.jpg')
 #image = cv2.imread('./test_images/test3.jpg')
 #image = cv2.imread('./test_images/test4.jpg')
-#image = cv2.imread('./test_images/test5.jpg')
-image = cv2.imread('./test_images/test6.jpg')
+image = cv2.imread('./test_images/test5.jpg')
+#image = cv2.imread('./test_images/test6.jpg')
 #image = cv2.imread('./test_images/testing.jpg')
     
 ksize = 3 
@@ -166,7 +166,8 @@ gradx = abs_sobel_thresh(img_undist, orient='x', sobel_kernel=ksize, thresh=(52,
 grady = abs_sobel_thresh(img_undist, orient='y', sobel_kernel=ksize, thresh=(59, 249))
 mag_binary = mag_thresh(img_undist, sobel_kernel=ksize, mag_thresh=(68, 255))
 dir_binary = dir_threshold(img_undist, sobel_kernel=ksize, thresh=(0.02, 1.57))
-s_binary = hls_select(img_undist,thresh=(212,255))
+#s_binary = hls_select(img_undist,thresh=(212,255))
+s_binary = hls_select(img_undist,thresh=(151,255))
 #was 254 perviously but 255 works better for test 1
 
 
@@ -228,12 +229,14 @@ cv2.fillPoly(final_out_img,np.int_([pts]),(0,255,0))
 #cv2.imwrite('./test_images/test.jpg',combined*255)
 newwarp = cv2.warpPerspective(final_out_img, Minv, (image.shape[1], image.shape[0])) 
 result = cv2.addWeighted(final_img, 1, newwarp, 0.3, 0)
-#cv2.imshow('undistorted',img_undist)
-#cv2.imshow('combined',combined*255)
-#cv2.imshow('warped',warped*255)
-#cv2.imshow('out_img',out_img)
-#cv2.imshow('result',result)
-cv2.imwrite('./output_images/test6.jpg',result)
+cv2.imshow('undistorted',img_undist)
+plt.plot(histogram_img)
+plt.show()
+cv2.imshow('combined',combined*255)
+cv2.imshow('warped',warped*255)
+cv2.imshow('out_img',out_img)
+cv2.imshow('result',result)
+#cv2.imwrite('./output_images/test5.jpg',result)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()

@@ -155,6 +155,9 @@ result1 = cv2.VideoWriter('./output_images/project_video.mp4',
 left_fit = []
 right_fit =[]
 count=0
+radoffset=150
+prev_left_fit=[]
+prev_right_fit=[]
 while(True):
     count+=1
     ret, image = cap.read()
@@ -171,7 +174,8 @@ while(True):
         grady = abs_sobel_thresh(img_undist, orient='y', sobel_kernel=ksize, thresh=(59, 249))
         mag_binary = mag_thresh(img_undist, sobel_kernel=ksize, mag_thresh=(68, 255))
         dir_binary = dir_threshold(img_undist, sobel_kernel=ksize, thresh=(0.02, 1.57))
-        s_binary = hls_select(img_undist,thresh=(212,255))
+        #s_binary = hls_select(img_undist,thresh=(212,255)) #98-255 works even in brighter areas
+        s_binary = hls_select(img_undist,thresh=(151,255)) #110
        
         
     
@@ -197,11 +201,12 @@ while(True):
         if(len(leftx)==0 or len(rightx)==0):
             histogram_img,leftx,lefty,rightx,righty,out_img = hist(warped,left_fit,right_fit,True)
             count=0
-            
+          
+        ploty = np.linspace(0,warped.shape[0]-1,warped.shape[0])
         left_fit = np.polyfit(lefty,leftx,2)
         right_fit = np.polyfit(righty,rightx,2)
-
-        ploty = np.linspace(0,warped.shape[0]-1,warped.shape[0])
+        
+        
         try:
             leftfitx = left_fit[0]*ploty**2 + left_fit[1]*ploty+left_fit[2]
             rightfitx = right_fit[0]*ploty**2+right_fit[1]*ploty+right_fit[2]
@@ -209,6 +214,8 @@ while(True):
                 print('The function failed to fit a line!')
     
         final_out_img = np.copy(out_img).astype(np.uint8)
+        
+    
     
     #out_img[lefty,leftx] = [255,0,0]
     #out_img[righty,rightx] = [0,0,255]
@@ -218,7 +225,16 @@ while(True):
     #cv2.polylines(out_img,[leftpoints_draw],False,(0,255,255),3)
     #cv2.polylines(out_img,[rightpoints_draw],False,(0,255,255),3)
 
-#**Measuring Curvature radius**
+
+
+#**Drwaing on image the lane**
+        pts_left = np.array([np.transpose(np.vstack([leftfitx, ploty]))])
+        pts_right = np.array([np.flipud(np.transpose(np.vstack([rightfitx, ploty])))])
+#flipud is just reversing the order of the points which are from top to bottom to make them bottom to top so that we can have an anticlockwise ordering of the corners.
+        pts = np.hstack((pts_left, pts_right))
+#print(pts.shape)
+        
+        #**Measuring Curvature radius**
         y_eval = np.max(ploty)
         ym_per_pixel = 30/720 #meters per pixel in y dimension
         xm_per_pixel = 3.7/700 #meters per pixel in x dimension
@@ -227,23 +243,21 @@ while(True):
 
         #print('left_curved: '+str(left_curved))
         #print('right_curved: '+str(right_curved))
-
-#**Drwaing on image the lane**
-        pts_left = np.array([np.transpose(np.vstack([leftfitx, ploty]))])
-        pts_right = np.array([np.flipud(np.transpose(np.vstack([rightfitx, ploty])))])
-#flipud is just reversing the order of the points which are from top to bottom to make them bottom to top so that we can have an anticlockwise ordering of the corners.
-        pts = np.hstack((pts_left, pts_right))
-#print(pts.shape)
+        
 
 
         cv2.fillPoly(final_out_img,np.int_([pts]),(0,255,0))
 #cv2.imwrite('./test_images/test.jpg',combined*255)
         newwarp = cv2.warpPerspective(final_out_img, Minv, (image.shape[1], image.shape[0])) 
         result = cv2.addWeighted(final_img, 1, newwarp, 0.3, 0)
-        ltext = "left Curvature: "+ str(left_curved)
-        rtext = "right Curvature: " + str(right_curved)
-        cv2.putText(result,ltext,(300,100),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),5,cv2.LINE_4)
-        cv2.putText(result,rtext,(850,100),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),5,cv2.LINE_4)
+        ltext = "left Curvature(km): " + str(round(left_curved/1000,3))
+        rtext = "right Curvature(km): " + str(round(right_curved/1000,3))
+        cent_out = round((left_curved + right_curved)/2000,3)
+        distance_from_center = round(abs(img_size[0]*xm_per_pixel/2 - cent_out),3)
+        cent = "Vehicle is left from center(km): " + str(distance_from_center)
+        cv2.putText(result,ltext,(200,100),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),5,cv2.LINE_4)
+        cv2.putText(result,rtext,(750,100),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),5,cv2.LINE_4)
+        cv2.putText(result,cent,(350,200),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),5,cv2.LINE_4)
         cv2.imshow('result',result)
         result1.write(result)
         if cv2.waitKey(1) & 0xFF == ord('q'):

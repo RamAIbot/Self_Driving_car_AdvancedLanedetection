@@ -23,7 +23,25 @@ dst = dist_pickle["dist"]
 mtx = dist_pickle["mtx"]
 #Calib test image
 #image = cv2.imread('./camera_cal/calibration3.jpg')
+fin=[]
+out = np.arange(0,250)/250
+#print(out.shape)
+out1= np.ones(100)
+#print(out1.shape)
+out2=np.arange(400,350,-1)/400
+#print(out2.shape)
+out3=np.zeros(400)
+#print(out3.shape)
 
+out4=np.arange(800,850,1)/850
+#print(out4.shape)
+out5=np.ones(100)
+#print(out5.shape)
+out6 = np.arange(1100,950,-1)/1100
+out7=np.zeros(180)
+
+fin = np.concatenate((out, out1, out2,out3,out4,out5,out6,out7))
+fin = np.expand_dims(fin,axis=1)
 
 def abs_sobel_thresh(img, orient='x', sobel_kernel=3, thresh=(0, 255)):
     # Calculate directional gradient
@@ -84,6 +102,12 @@ def hist(img):
     img = np.expand_dims(img,axis=-1)
     bottom_half = img[img.shape[0]//2:,:]
     histogram = np.sum(bottom_half,axis=0)
+#    out = np.arange(600)
+#    out1 = np.arange(600,-1,-1)
+#    out3=np.zeros(79)
+#    out2=np.concatenate((out, out1, out3))
+#    fin = np.expand_dims(out2,axis=1)
+    histogram = np.multiply(histogram,fin)
     #print(img.shape)
     out_img = np.dstack((img,img,img))
     #print(out_img.shape)
@@ -155,9 +179,10 @@ def hist(img):
 #image = cv2.imread('./test_images/test2.jpg')
 #image = cv2.imread('./test_images/test3.jpg')
 #image = cv2.imread('./test_images/test4.jpg')
-image = cv2.imread('./test_images/test5.jpg')
+#image = cv2.imread('./test_images/test5.jpg')
 #image = cv2.imread('./test_images/test6.jpg')
 #image = cv2.imread('./test_images/testing.jpg')
+image = cv2.imread('D:/Self Driving Car Engineer/Course 4/SampleImages/1040.jpg')
     
 ksize = 3 
 img_undist = cv2.undistort(image,mtx,dst,None,mtx)

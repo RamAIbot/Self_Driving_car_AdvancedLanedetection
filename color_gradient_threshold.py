@@ -78,11 +78,21 @@ def yellow(image,thresh=(0,255)):
     binary_output[(y_aloneG>thresh[0])&(y_aloneG<=thresh[1])&(y_aloneR>thresh[0])&(y_aloneR<=thresh[1])]=1
     return binary_output
 
+def yuv_select_lumin(image,thresh=(0,255)):
+    yuv_img = cv2.cvtColor(image,cv2.COLOR_BGR2YUV)
+    lumin = yuv_img[:,:,0]
+    binary_output = np.zeros_like(lumin)
+    binary_output[(lumin>thresh[0])&(lumin<=thresh[1])]=1
+    return binary_output
+
 # Choose a Sobel kernel size
 ksize = 3 # Choose a larger odd number to smooth gradient measurements
 #image = cv2.imread('./test_images/straight_lines1.jpg')
-#image = cv2.imread('./test_images/test3.jpg')
-image = cv2.imread('./test_images/testing.jpg')
+#image = cv2.imread('./test_images/test5.jpg')
+#image = cv2.imread('./test_images/testing.jpg')
+
+image = cv2.imread('D:/Self Driving Car Engineer/Course 4/SampleImages/1035.jpg')
+
 
 # Apply each of the thresholding functions
 #gradx = abs_sobel_thresh(image, orient='x', sobel_kernel=ksize, thresh=(20, 100))
@@ -123,6 +133,9 @@ cv2.createTrackbar('l_max','Thresholding',0,255,nothing)
 cv2.createTrackbar('y_min','Thresholding',0,255,nothing)
 cv2.createTrackbar('y_max','Thresholding',0,255,nothing)
 
+cv2.createTrackbar('lumin_min','Thresholding',0,255,nothing)
+cv2.createTrackbar('lumin_max','Thresholding',0,255,nothing)
+
 while(1):
     print('while')
     sx_min = cv2.getTrackbarPos('Sobelx_min','Thresholding')
@@ -144,6 +157,9 @@ while(1):
     ymin = cv2.getTrackbarPos('y_min','Thresholding')
     ymax = cv2.getTrackbarPos('y_max','Thresholding')
     
+    lumin_min = cv2.getTrackbarPos('lumin_min','Thresholding')
+    lumin_max = cv2.getTrackbarPos('lumin_max','Thresholding')
+    
     gradx = abs_sobel_thresh(image, orient='x', sobel_kernel=ksize, thresh=(sx_min, sx_max))
     grady = abs_sobel_thresh(image, orient='y', sobel_kernel=ksize, thresh=(sy_min, sy_max))
     mag_binary = mag_thresh(image, sobel_kernel=ksize, mag_thresh=(mag_min, mag_max))
@@ -154,9 +170,10 @@ while(1):
     
     y_binary=yellow(image,thresh=(ymin,ymax))
     #h_binary = hls_select_hue(image,thresh=(hmin,hmax))
+    luminescence = yuv_select_lumin(image,thresh=(lumin_min,lumin_max)) 
     
     combined = np.zeros_like(dir_binary)
-    combined[((gradx == 1) & (grady == 1)) | ((mag_binary == 1) & (dir_binary == 1)) |(s_binary == 1) & (y_binary==1) | (l_binary==1)] = 1
+    combined[((gradx == 1) & (grady == 1)) | ((mag_binary == 1) & (dir_binary == 1)) |(s_binary == 1) &(luminescence==1)] = 1
     cv2.imshow('Combined',combined*255)
     cv2.waitKey(1)
 cv2.destroyAllWindows()
